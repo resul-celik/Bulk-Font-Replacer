@@ -3,8 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <title>Replace Fonts</title>
     <style>
+      :root {
+        --font: "Outfit", sans-serif;
+        --primary-color: #f9dec9;
+        --secondary-color: #050517;
+        --tertiary-color: #abd1b5;
+      }
+
       body {
         width: 100%;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -12,85 +25,302 @@
           sans-serif;
         padding: 0;
         margin: 0;
-      }
-
-      .wrapper {
-        width: 100%;
-        height: 100vh;
         box-sizing: border-box;
-        padding: 10px;
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-end;
-        flex-direction: column;
-        gap: 25px;
-      }
-
-      #fonts-container {
-        width: 100%;
-        height: auto;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        flex-direction: column;
       }
 
       .container {
-        width: 100%;
-        height: auto;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
-        border-bottom: 1px solid #dadada;
-        padding: 10px 0;
+        padding: 0px;
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        inset: 0;
+        background: var(--primary-color);
+        border-radius: 0px;
+        box-sizing: border-box;
       }
 
-      .dropdown {
-        position: relative;
-      }
-      .dropdown-text {
-        width: auto;
+      .body {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0px 90px;
+        gap: 20px;
+        width: 100%;
         height: auto;
-        display: inline-block;
-        padding: 10px 15px;
-        background-color: rgb(223, 230, 230);
-        border-radius: 12px;
-        user-select: none;
+        flex: none;
+        order: 0;
+        align-self: stretch;
+        flex-grow: 1;
+        font-size: 25px;
+        text-align: center;
+        box-sizing: border-box;
+        font-family: var(--font);
+      }
+
+      .footer,
+      .fonts-footer {
+        display: none;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        gap: 6px;
+        width: 100%;
+        height: auto;
+        flex: none;
+        order: 1;
+        align-self: stretch;
+        box-sizing: border-box;
+        font-size: 14px;
+        font-family: var(--font);
+      }
+
+      .fonts-footer {
+        padding: 0 0 0 15px;
+        border-top: 1px solid var(--secondary-color);
+      }
+
+      .footer-left {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        padding: 0px;
+        gap: 3px;
+        flex-grow: 1;
+        box-sizing: border-box;
+      }
+
+      .footer-right {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0px;
+        gap: 6px;
+      }
+
+      .selected-fonts {
+        display: none;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        align-self: stretch;
+        flex-grow: 1;
+        box-sizing: border-box;
+        overflow-y: scroll;
+      }
+
+      .selected-font {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0px 0px 0px 15px;
+        gap: 20px;
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid var(--secondary-color);
+        flex: none;
+        align-self: stretch;
+        flex-grow: 0;
+        box-sizing: border-box;
+        font-family: var(--font);
+        font-weight: 400;
+      }
+
+      .current-font {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0px;
+        gap: 6px;
+        flex-grow: 0;
+      }
+
+      .font-name {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 5px;
+        pointer-events: none;
+        font-size: 18px;
+        font-weight: 400;
+      }
+
+      .font-style {
+        font-size: 12px;
+        padding: 2px 5px;
+        background-color: var(--tertiary-color);
+        pointer-events: none;
+      }
+
+      .arrow-wrapper {
+        position: relative;
+        height: 0;
+        border-bottom: 1px solid var(--secondary-color);
+        flex-grow: 1;
+      }
+
+      .arrow {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        right: 1px;
+        top: -6px;
+        transform: rotate(-45deg);
+        background-color: transparent;
+        border-right: 1px solid var(--secondary-color);
+        border-bottom: 1px solid var(--secondary-color);
+      }
+
+      .dropdown-text {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 15px;
+        gap: 12px;
+        background: var(--primary-color);
+        border-left: 1px solid var(--secondary-color);
+        flex-grow: 0;
+        box-sizing: border-box;
         cursor: pointer;
+        user-select: none;
+        font-size: 18px;
+      }
+
+      .dropdown-selected {
+        background: var(--tertiary-color);
       }
 
       .dropdown-content {
-        width: 320px;
-        height: auto;
+        width: 100vw;
+        height: 100vh;
         display: none;
         justify-content: flex-start;
         align-items: flex-start;
         flex-direction: column;
-        max-height: 250px;
         position: absolute;
-        bottom: -5px;
-        transform: translateY(100%);
-        right: 0;
-        background-color: white;
-        padding: 8px 0;
+        inset: 0;
+        background-color: var(--primary-color);
+        padding: 0;
         box-sizing: border-box;
-        box-shadow: 0px 4px 15.7px rgba(0, 0, 0, 0.09);
-        border-radius: 12px;
-        overflow-y: scroll;
         z-index: 99;
       }
 
-      .option {
+      .content-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        gap: 15px;
         width: 100%;
-        padding: 8px 16px;
+        align-self: stretch;
+        flex-grow: 0;
+        box-sizing: border-box;
+      }
+
+      .content-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0px;
+        gap: 5px;
+        width: 100%;
+        align-self: stretch;
+        flex-grow: 0;
+      }
+
+      .dropdown-title {
+        font-family: var(--font);
+        font-weight: 400;
+        font-size: 14px;
+      }
+
+      .dropdown-title b {
+        font-weight: 600;
+      }
+
+      .close-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .close-icon path {
+        stroke: var(--secondary-color);
+      }
+
+      .search {
+        display: block;
+        padding: 12px 11px;
+        width: 100%;
+        background-color: var(--primary-color);
+        border: 1px solid var(--secondary-color);
+        color: var(--secondary-color);
+        outline: none;
+        align-self: stretch;
+        flex-grow: 0;
+        box-sizing: border-box;
+        font-family: var(--font);
+        font-weight: 400;
+        font-size: 14px;
+      }
+
+      .search::placeholder {
+        color: var(--secondary-color);
+      }
+
+      .options {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow-y: scroll;
+      }
+
+      .option {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 12px 15px;
+        gap: 20px;
+        width: 100%;
+        border-bottom: 1px solid var(--secondary-color);
+        align-self: stretch;
+        flex-grow: 0;
+        box-sizing: border-box;
         user-select: none;
         cursor: pointer;
       }
 
+      .current-option {
+        background-color: var(--tertiary-color);
+      }
+
+      .first-option {
+        border-top: 1px solid var(--secondary-color);
+      }
+
       .option:hover {
-        background-color: #dadada;
+        background-color: var(--tertiary-color);
         box-sizing: border-box;
+      }
+
+      .option:hover .font-style,
+      .current-option .font-style,
+      .dropdown-selected .font-style {
+        background-color: var(--primary-color);
       }
 
       .active {
@@ -98,37 +328,74 @@
       }
 
       #replace-button {
-        padding: 10px 20px;
-        background-color: black;
-        color: white;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 40px;
+        gap: 10px;
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        flex-grow: 0;
+        box-sizing: border-box;
+        font-family: var(--font);
+        font-weight: 400;
+        font-size: 16px;
         border: none;
+        border-left: 1px solid var(--secondary-color);
         outline: none;
         cursor: pointer;
-        border-radius: 12px;
-        font-size: 16px;
-      }
-
-      .container span {
-        width: 100%;
+        user-select: none;
       }
 
       #replace-button:hover {
-        background-color: #444;
+        background-color: var(--primary-color);
+        border-left: 1px solid var(--secondary-color);
+        color: var(--secondary-color);
+      }
+
+      .information {
+        font-family: var(--font);
+        font-weight: 400;
+        font-size: 12px;
+        color: var(--secondary-color);
+      }
+
+      .selected {
+        display: flex;
       }
     </style>
   </head>
   <body>
-    <div class="wrapper">
-      <div id="fonts-container">
-        <div class="container">
-          <span>From:</span>
-          <span>To:</span>
+    <div class="container">
+      <div class="body selected">
+        <div class="text">
+          Select all the layers containing the text that you want to replace
         </div>
       </div>
-      <button id="replace-button">Replace Fonts</button>
+      <div class="selected-fonts"></div>
+      <div class="footer selected">
+        <div class="footer-left">© 2024 Bulk Font Replacer by</div>
+        <div class="footer-right">
+          <span>Pagenum</span>
+          <span>Github</span>
+        </div>
+      </div>
+      <div class="fonts-footer">
+        <div class="footer-left">
+          <div class="information">
+            **If you don’t select a font, It won’t be replaced with new one
+          </div>
+        </div>
+        <div class="footer-right">
+          <button id="replace-button">Replace Fonts</button>
+        </div>
+      </div>
     </div>
     <script>
       let fontSelectors = [];
+
+      /* DROPDOWN */
 
       function createDropdown(font, allFonts, index) {
         // Create Wrapper
@@ -164,68 +431,226 @@
         const dropdownContent = document.createElement("div");
         dropdownContent.classList.add("dropdown-content");
 
-        allFonts.forEach((fontObj) => {
-          const option = document.createElement("div");
-          option.classList.add("option");
-          option.dataset.value = JSON.stringify({
-            family: fontObj.fontName.family,
-            style: fontObj.fontName.style,
-          });
-          option.innerText = `${fontObj.fontName.family} (${fontObj.fontName.style})`;
+        const contentHead = document.createElement("div");
+        contentHead.classList.add("content-head");
 
-          option.onclick = function () {
-            const wrapper = this.closest(".dropdown");
+        const contentActions = document.createElement("div");
+        contentActions.classList.add("content-actions");
+
+        const closeIcon = document.createElement("div");
+        closeIcon.classList.add("close-icon");
+        closeIcon.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.11621 0.821045L17.1533 16.8581M17.1533 0.821136L1.11621 16.8582"/>
+        </svg>
+        `;
+        closeIcon.onclick = function () {
+          const parent = this.closest(".dropdown");
+
+          parent.querySelector(".dropdown-content").classList.remove("active");
+          parent.setAttribute("data-active", "false");
+        };
+
+        const dropdownTitle = document.createElement("div");
+        dropdownTitle.classList.add("dropdown-title");
+        dropdownTitle.innerHTML = `Replace the <b>'${font.family} ${font.style}'</b> with:`;
+
+        contentActions.appendChild(dropdownTitle);
+        contentActions.appendChild(closeIcon);
+
+        contentHead.appendChild(contentActions);
+
+        const search = document.createElement("input");
+        search.classList.add("search");
+        search.type = "text";
+        search.placeholder = "Search fonts";
+        search.onkeyup = function (e) {
+          let filteredFonts = [];
+          filteredFonts = allFonts.filter(function (ev) {
+            return ev.fontName.family.toLowerCase().includes(e.target.value);
+          });
+
+          createOptions(filteredFonts);
+        };
+
+        contentHead.appendChild(search);
+        dropdownContent.appendChild(contentHead);
+
+        const options = document.createElement("div");
+        options.classList.add("options");
+
+        function createOptions(allFonts) {
+          options.innerHTML = "";
+
+          function handleOptionClicks(e) {
+            const currentOption = e.target;
+            const wrapper = currentOption.closest(".dropdown");
             const dtText = wrapper.querySelector(".dropdown-text");
 
-            dtText.innerText = this.innerText;
-            wrapper.dataset.value = this.dataset.value;
+            let selectedState = currentOption.dataset.value;
 
+            let optionValues = JSON.parse(selectedState);
+
+            if (optionValues.family === "None") {
+              dtText.classList.remove("dropdown-selected");
+              dtText.innerText = "Select a font";
+            } else {
+              dtText.classList.add("dropdown-selected");
+              dtText.innerHTML = `<div class="font-name">${optionValues.family}</div><div class="font-style">${optionValues.style}</div>`;
+            }
+
+            wrapper.querySelectorAll(".option").forEach((el) => {
+              el.classList.remove("current-option");
+            });
+            currentOption.classList.add("current-option");
+
+            wrapper
+              .querySelector(".dropdown-content")
+              .classList.remove("active");
+            wrapper.setAttribute("data-active", "false");
+
+            wrapper.dataset.value = selectedState;
             // Update the corresponding fontSelector value
-            fontSelectors[index].value = wrapper.dataset.value;
-          };
+            fontSelectors[index].value = selectedState;
+          }
 
-          dropdownContent.appendChild(option);
-        });
+          const option = document.createElement("div");
+          option.classList.add("option", "first-option", "current-option");
+          option.dataset.value = JSON.stringify({
+            family: "None",
+            style: "None",
+          });
+          option.innerHTML = `<div class='font-name'>-- Select a font</div>`;
 
+          option.onclick = (e) => handleOptionClicks(e);
+
+          options.appendChild(option);
+
+          allFonts.forEach((fontObj) => {
+            if (
+              fontObj.fontName.family.substr(0, 1) !== "." &&
+              fontObj.fontName.family.substr(0, 1) !== "?"
+            ) {
+              const option = document.createElement("div");
+              option.classList.add("option");
+              option.dataset.value = JSON.stringify({
+                family: fontObj.fontName.family,
+                style: fontObj.fontName.style,
+              });
+              option.innerHTML = `<div class='font-name'>${fontObj.fontName.family}</div><div class='font-style'>${fontObj.fontName.style}</div>`;
+
+              option.onclick = (e) => handleOptionClicks(e);
+
+              options.appendChild(option);
+            }
+          });
+        }
+
+        createOptions(allFonts);
+        dropdownContent.appendChild(options);
         dropdown.appendChild(dropdownContent);
         return dropdown;
       }
 
-      // Function to create a dropdown for font replacement
-      function createFontDropdown(font, allFonts, index) {
-        const container = document.createElement("div");
-        container.classList = ["container"];
+      /* FONT ROW */
+      function createFontRow(font, allFonts, index) {
+        const fontRow = document.createElement("div");
+        fontRow.classList = ["selected-font"];
 
-        const label = document.createElement("label");
-        label.innerText = font;
-        container.appendChild(label);
+        const currentFont = document.createElement("div");
+        currentFont.classList.add("current-font");
+        currentFont.innerHTML = `<div class='font-name'>${font.family} </div><div class='font-style'>${font.style}</div>`;
+        fontRow.appendChild(currentFont);
+
+        const arrowWrapper = document.createElement("div");
+        arrowWrapper.classList.add("arrow-wrapper");
+        arrowWrapper.innerHTML = '<div class="arrow"></div>';
+        fontRow.appendChild(arrowWrapper);
 
         const dropdown = createDropdown(font, allFonts, index);
 
-        container.appendChild(dropdown);
-        document.getElementById("fonts-container").appendChild(container);
+        fontRow.appendChild(dropdown);
 
-        return { font, value: dropdown.dataset.value };
+        document.querySelector(".selected-fonts").appendChild(fontRow);
+
+        return {
+          family: font.family,
+          style: font.style,
+          value: dropdown.dataset.value,
+        };
+      }
+
+      function defaultPage(container) {
+        const body = document.createElement("div");
+        body.classList.add("body");
+        body.innerHTML =
+          "Select all the layers that contain the text that you want to replace";
+
+        const footer = document.createElement("div");
+        footer.classList.add("footer");
+
+        const footerLeft = document.createElement("div");
+        footerLeft.classList.add("footer-left");
+        footerLeft.innerHTML = "© 2024 Bulk Font Replacer by";
+
+        const footerRight = document.createElement("div");
+        footerRight.classList.add("footer-right");
+        footerRight.innerHTML = "<span>Pagenum</span><span>Github</span>";
+
+        footer.appendChild(footerLeft);
+        footer.appendChild(footerRight);
+        container.appendChild(body);
+        container.appendChild(footer);
+
+        return container;
       }
 
       // Handle messages from the plugin code
       window.onmessage = (event) => {
         const message = event.data.pluginMessage;
+        let fontsUsed, allFonts;
+        const container = document.querySelector(".container");
+        const body = document.querySelector(".body");
+        const footer = document.querySelector(".footer");
+        const fontsFooter = document.querySelector(".fonts-footer");
+        const fontContainer = document.querySelector(".selected-fonts");
 
-        if (message.type === "load-fonts") {
-          const fontsUsed = message.fontsUsed;
-          const allFonts = message.allFonts;
+        if (message.fontsUsed.length === 0) {
+          body.classList.add("selected");
+          footer.classList.add("selected");
+          fontsFooter.classList.remove("selected");
+          fontContainer.classList.remove("selected");
+        } else {
+          body.classList.remove("selected");
+          footer.classList.remove("selected");
+          fontsFooter.classList.add("selected");
+          fontContainer.classList.add("selected");
 
-          fontSelectors = fontsUsed.map((font, index) =>
-            createFontDropdown(font, allFonts, index)
-          );
+          if (message.type === "load-fonts") {
+            fontsUsed = message.fontsUsed;
+            allFonts = message.allFonts;
+
+            fontContainer.innerHTML = "";
+            fontSelectors = fontsUsed.map((font, index) =>
+              createFontRow(font, allFonts, index)
+            );
+          }
+
+          if (message.type === "selected-fonts") {
+            fontsUsed = message.fontsUsed;
+            allFonts = message.allFonts;
+
+            fontContainer.innerHTML = "";
+            fontSelectors = fontsUsed.map((font, index) =>
+              createFontRow(font, allFonts, index)
+            );
+          }
         }
       };
 
       // Handle the replace button click
       document.getElementById("replace-button").onclick = () => {
         fontSelectors.forEach((selector) => {
-          const originalFont = selector.font;
+          const originalFont = selector;
           const newFont = JSON.parse(selector.value);
 
           parent.postMessage(
