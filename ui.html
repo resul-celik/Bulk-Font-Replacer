@@ -649,21 +649,15 @@
 
       // Handle the replace button click
       document.getElementById("replace-button").onclick = () => {
-        fontSelectors.forEach((selector) => {
-          const originalFont = selector;
-          const newFont = JSON.parse(selector.value);
-
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: "replace-fonts",
-                originalFont: originalFont,
-                newFont: newFont,
-              },
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "replace-fonts",
+              allFonts: fontSelectors,
             },
-            "*"
-          );
-        });
+          },
+          "*"
+        );
       };
     </script>
   </body>
