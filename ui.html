@@ -103,6 +103,18 @@
         gap: 6px;
       }
 
+      .footer-right a {
+        color: var(--secondary-color);
+        font-family: var(--font);
+        text-decoration: none;
+      }
+
+      .footer-right a:hover {
+        color: var(--secondary-color);
+        font-family: var(--font);
+        text-decoration: underline;
+      }
+
       .selected-fonts {
         display: none;
         flex-direction: column;
@@ -139,6 +151,7 @@
         padding: 0px;
         gap: 6px;
         flex-grow: 0;
+        pointer-events: none;
       }
 
       .font-name {
@@ -259,6 +272,11 @@
         stroke: var(--secondary-color);
       }
 
+      .search-wrapper {
+        width: 100%;
+        position: relative;
+      }
+
       .search {
         display: block;
         padding: 12px 11px;
@@ -279,6 +297,13 @@
         color: var(--secondary-color);
       }
 
+      .search-icon {
+        position: absolute;
+        right: 10px;
+        top: calc(50% - 14px);
+        z-index: 8;
+      }
+
       .options {
         width: 100%;
         display: flex;
@@ -292,6 +317,7 @@
       .option {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
         align-items: center;
         padding: 12px 15px;
         gap: 20px;
@@ -306,6 +332,13 @@
 
       .current-option {
         background-color: var(--tertiary-color);
+      }
+
+      .current-option::after {
+        content: "";
+        width: 21px;
+        height: 15px;
+        background-image: url("data:image/svg+xml,%3Csvg width='21' height='15' viewBox='0 0 21 15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.0001 0.54895L6.76072 13.7884L0.700195 7.72784' stroke='%23050517'/%3E%3C/svg%3E%0A");
       }
 
       .first-option {
@@ -369,22 +402,47 @@
   <body>
     <div class="container">
       <div class="body selected">
+        <img
+          src="data:image/svg+xml,%3Csvg width='45' height='46' viewBox='0 0 45 46' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect y='0.5' width='45' height='45' rx='5' fill='%23ABD1B5'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10.1649 6.72302H4.71094V19.431H10.1289C11.0289 19.431 11.7969 19.269 12.4329 18.945C13.0809 18.621 13.5729 18.183 13.9089 17.631C14.2569 17.067 14.4309 16.437 14.4309 15.741C14.4309 14.829 14.1369 14.061 13.5489 13.437C13.2511 13.1143 12.8874 12.8478 12.4579 12.6374C12.7641 12.4671 13.0258 12.2657 13.2429 12.033C13.7469 11.493 13.9989 10.833 13.9989 10.053C13.9989 9.44102 13.8489 8.88302 13.5489 8.37902C13.2489 7.87502 12.8109 7.47302 12.2349 7.17302C11.6709 6.87302 10.9809 6.72302 10.1649 6.72302ZM7.50094 17.235H9.85894C10.4109 17.235 10.8429 17.073 11.1549 16.749C11.4669 16.425 11.6229 16.029 11.6229 15.561C11.6229 15.237 11.5509 14.949 11.4069 14.697C11.2629 14.445 11.0589 14.247 10.7949 14.103C10.5429 13.959 10.2309 13.887 9.85894 13.887H7.50094V17.235ZM9.62494 11.745H7.50094V8.91902H9.62494C10.0929 8.91902 10.4709 9.03902 10.7589 9.27902C11.0469 9.50702 11.1909 9.85502 11.1909 10.323C11.1909 10.803 11.0469 11.163 10.7589 11.403C10.4709 11.631 10.0929 11.745 9.62494 11.745Z' fill='black'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M32.0643 39.0691V33.8311H32.3596L36.1503 39.0691H39.4983L35.4274 33.7396C35.8598 33.6626 36.2568 33.5371 36.6183 33.3631C37.2663 33.0511 37.7703 32.6191 38.1303 32.0671C38.4903 31.5031 38.6703 30.8491 38.6703 30.1051C38.6703 29.3731 38.4903 28.7251 38.1303 28.1611C37.7703 27.5971 37.2723 27.1591 36.6363 26.8471C36.0003 26.5231 35.2623 26.3611 34.4223 26.3611H29.2383V39.0691H32.0643ZM34.0803 31.7431H32.0643V28.5571H34.0983C34.6623 28.5571 35.0943 28.7071 35.3943 29.0071C35.6943 29.3071 35.8443 29.6851 35.8443 30.1411C35.8443 30.6331 35.6883 31.0231 35.3763 31.3111C35.0763 31.5991 34.6443 31.7431 34.0803 31.7431Z' fill='black'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M27.1194 15.6594C26.7209 16.1243 26.3848 16.6099 26.1108 17.1162C26.0112 17.2905 25.9116 17.4814 25.812 17.689C25.7207 17.8882 25.6003 18.158 25.4509 18.4983C25.3098 18.8386 25.1313 19.2744 24.9155 19.8057C24.708 20.3369 24.4382 21.0176 24.1062 21.8477H20.5576V22.3457H23.9194C23.8032 22.6445 23.6787 22.96 23.5459 23.292C23.4214 23.624 23.2844 23.9768 23.135 24.3503C22.6951 25.446 22.28 26.4048 21.8899 27.2266C21.5081 28.0483 21.1345 28.7581 20.7693 29.3557C20.4124 29.9451 20.0596 30.4348 19.7109 30.8249C19.3623 31.2068 19.0054 31.5139 18.6401 31.7463C18.2749 31.9705 17.8972 32.1282 17.5071 32.2195C17.1169 32.3108 16.7019 32.3564 16.262 32.3564C15.6726 32.3564 15.1414 32.2859 14.6682 32.1448C14.2034 32.0037 13.8091 31.8044 13.4854 31.5471C13.1616 31.2815 12.9126 30.9619 12.7383 30.5884C12.564 30.2148 12.4768 29.7915 12.4768 29.3184C12.4768 28.978 12.5225 28.7041 12.6138 28.4966C12.7134 28.2891 12.8337 28.123 12.9749 27.9985C13.116 27.8657 13.2695 27.762 13.4355 27.6873C13.6099 27.6042 13.7676 27.5254 13.9087 27.4507C14.0498 27.3677 14.166 27.2722 14.2573 27.1643C14.3569 27.0481 14.4067 26.8945 14.4067 26.7036C14.4067 26.4712 14.3445 26.3135 14.22 26.2305C14.0955 26.1392 13.946 26.0935 13.7717 26.0935C13.5061 26.0935 13.2571 26.1807 13.0247 26.355C12.8005 26.521 12.6013 26.7451 12.427 27.0273C12.261 27.3013 12.1282 27.6208 12.0286 27.9861C11.9373 28.3513 11.8916 28.7332 11.8916 29.1316C11.8916 29.7292 12.0037 30.2563 12.2278 30.7129C12.4519 31.1694 12.7549 31.5554 13.1367 31.8708C13.5269 32.178 13.9834 32.4104 14.5063 32.5681C15.0376 32.7258 15.6104 32.8047 16.2246 32.8047C17.1709 32.8047 18.0881 32.6055 18.9763 32.207C19.8645 31.8003 20.7195 31.1736 21.5413 30.3269C22.363 29.4719 23.1433 28.3845 23.8821 27.0647C24.6208 25.7449 25.314 24.1719 25.9614 22.3457H29.7715V21.8477H26.1357C26.4429 20.9927 26.7126 20.2498 26.9451 19.6189C27.1858 18.9797 27.3892 18.4277 27.5552 17.9629C27.7295 17.498 27.8789 17.1121 28.0034 16.8049C28.1279 16.4895 28.2358 16.2239 28.3271 16.0081C28.4268 15.7922 28.5098 15.6179 28.5762 15.4851C28.6509 15.344 28.7256 15.2195 28.8003 15.1116C28.958 14.8708 29.1531 14.6343 29.3855 14.4019C29.5017 14.4102 29.6179 14.4143 29.7341 14.4143H30.0952C30.8174 14.4143 31.4856 14.3645 32.0999 14.2649C32.7141 14.1653 33.2495 14.0283 33.7061 13.854C34.1626 13.6797 34.5195 13.4763 34.7769 13.2439C35.0342 13.0032 35.1628 12.7458 35.1628 12.4719C35.1628 12.2893 35.0964 12.1648 34.9636 12.0984C34.8391 12.032 34.5984 11.9988 34.2415 11.9988C33.5359 11.9988 32.8303 12.1108 32.1248 12.335C31.4275 12.5508 30.7468 12.8455 30.0828 13.219C29.3108 13.1941 28.5554 13.1318 27.8167 13.0322C27.0779 12.9326 26.3474 12.8289 25.6252 12.7209C24.9031 12.6047 24.1851 12.501 23.4712 12.4097C22.7656 12.3184 22.0601 12.2727 21.3545 12.2727C20.4082 12.2727 19.5698 12.364 18.8394 12.5466C18.1172 12.7292 17.5112 12.9824 17.0215 13.3062C16.54 13.6299 16.1748 14.0159 15.9258 14.4641C15.6768 14.9041 15.5522 15.3855 15.5522 15.9084C15.5522 16.2986 15.6228 16.6638 15.7639 17.0042C15.905 17.3445 16.1084 17.6433 16.374 17.9006C16.6479 18.1497 16.9758 18.3489 17.3577 18.4983C17.7478 18.6394 18.1919 18.71 18.6899 18.71C18.9639 18.71 19.2502 18.6892 19.5491 18.6477C19.8562 18.5979 20.1592 18.5315 20.458 18.4485C20.7651 18.3572 21.0681 18.2534 21.3669 18.1372C21.6658 18.0127 21.9521 17.8716 22.2261 17.7139L21.9771 17.415C21.7529 17.5479 21.5039 17.6682 21.23 17.7761C20.9561 17.884 20.6738 17.9795 20.3833 18.0625C20.1011 18.1372 19.8188 18.1953 19.5366 18.2368C19.2544 18.2783 18.9888 18.2991 18.7397 18.2991C18.2998 18.2991 17.9138 18.2327 17.5818 18.0999C17.2498 17.967 16.9717 17.7927 16.7476 17.5769C16.5234 17.3528 16.3533 17.0996 16.2371 16.8174C16.1208 16.5269 16.0627 16.2239 16.0627 15.9084C16.0627 15.5764 16.1333 15.2527 16.2744 14.9373C16.4155 14.6135 16.6438 14.323 16.9592 14.0657C17.283 13.8083 17.7063 13.6008 18.2292 13.4431C18.7605 13.2854 19.4121 13.2065 20.1841 13.2065C20.79 13.2065 21.425 13.2522 22.0891 13.3435C22.7532 13.4348 23.4338 13.5427 24.1311 13.6672C24.8284 13.7917 25.5381 13.9204 26.2603 14.0532C26.9907 14.1777 27.7212 14.2732 28.4517 14.3396C27.9702 14.7463 27.5261 15.1863 27.1194 15.6594ZM32.5854 12.584C33.125 12.4263 33.6562 12.3474 34.1792 12.3474C34.5527 12.3474 34.7395 12.3972 34.7395 12.4968C34.7395 12.5798 34.6316 12.6628 34.4158 12.7458C34.2083 12.8206 33.9302 12.8911 33.5815 12.9575C33.2412 13.0239 32.8469 13.082 32.3987 13.1318C31.9587 13.1816 31.5022 13.2107 31.0291 13.219C31.5271 12.9534 32.0459 12.7417 32.5854 12.584Z' fill='black'/%3E%3C/svg%3E%0A"
+          alt=""
+        />
         <div class="text">
           Select all the layers containing the text that you want to replace
         </div>
       </div>
       <div class="selected-fonts"></div>
       <div class="footer selected">
-        <div class="footer-left">© 2024 Bulk Font Replacer by</div>
+        <div class="footer-left">
+          © 2024 Bulk Font Replacer by
+          <a href="https://resulcelik.com" target="_blank">
+            <svg
+              width="8"
+              height="8"
+              viewBox="0 0 7 7"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M0 0V7H3.5V3.5H7V0H0Z" fill="black" />
+            </svg>
+          </a>
+        </div>
         <div class="footer-right">
-          <span>Pagenum</span>
-          <span>Github</span>
+          <a
+            href="https://www.figma.com/community/plugin/1175115698559984660/pagenum"
+            target="_blank"
+            >Pagenum</a
+          >
+          <a
+            href="https://github.com/resul-celik/Bulk-Font-Replacer"
+            target="_blank"
+            >Github</a
+          >
         </div>
       </div>
       <div class="fonts-footer">
         <div class="footer-left">
           <div class="information">
-            **If you don’t select a font, It won’t be replaced with new one
+            **If you don’t select a font, It will not be replaced with a new one
           </div>
         </div>
         <div class="footer-right">
@@ -410,7 +468,7 @@
         // Create Text
         const dropdownText = document.createElement("div");
         dropdownText.classList.add("dropdown-text");
-        dropdownText.innerText = "Select a font";
+        dropdownText.innerHTML = `<div>Select a font</div><svg width="19" height="11" viewBox="0 0 19 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.334 1.21973L9.77342 9.78026L1.21289 1.21973" stroke="#050517"/></svg>`;
 
         dropdownText.onclick = function () {
           const parent = this.closest(".dropdown");
@@ -459,6 +517,11 @@
 
         contentHead.appendChild(contentActions);
 
+        const searchWrapper = document.createElement("div");
+        searchWrapper.classList.add("search-wrapper");
+        searchWrapper.innerHTML =
+          '<svg class="search-icon" width="28" height="26" viewBox="0 0 28 26" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.4346 20.2065L26.9999 24.7719M24.7174 12.9376C24.7174 19.4735 19.419 24.7719 12.8831 24.7719C6.34722 24.7719 1.04883 19.4735 1.04883 12.9376C1.04883 6.40166 6.34722 1.10327 12.8831 1.10327C19.419 1.10327 24.7174 6.40166 24.7174 12.9376Z" stroke="#050517"/></svg>';
+
         const search = document.createElement("input");
         search.classList.add("search");
         search.type = "text";
@@ -466,17 +529,20 @@
         search.onkeyup = function (e) {
           let filteredFonts = [];
           filteredFonts = allFonts.filter(function (ev) {
-            return ev.fontName.family.toLowerCase().includes(e.target.value);
+            return ev.fontName.both.toLowerCase().includes(e.target.value);
           });
 
           createOptions(filteredFonts);
         };
 
-        contentHead.appendChild(search);
+        searchWrapper.appendChild(search);
+        contentHead.appendChild(searchWrapper);
         dropdownContent.appendChild(contentHead);
 
         const options = document.createElement("div");
         options.classList.add("options");
+
+        /* Create Options */
 
         function createOptions(allFonts) {
           options.innerHTML = "";
@@ -492,10 +558,10 @@
 
             if (optionValues.family === "None") {
               dtText.classList.remove("dropdown-selected");
-              dtText.innerText = "Select a font";
+              dtText.innerText = `<div>Select a font</div><svg width="19" height="11" viewBox="0 0 19 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.334 1.21973L9.77342 9.78026L1.21289 1.21973" stroke="#050517"/></svg>`;
             } else {
               dtText.classList.add("dropdown-selected");
-              dtText.innerHTML = `<div class="font-name">${optionValues.family}</div><div class="font-style">${optionValues.style}</div>`;
+              dtText.innerHTML = `<div class="font-name">${optionValues.family}</div><div class="font-style">${optionValues.style}</div><svg width="19" height="11" viewBox="0 0 19 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.334 1.21973L9.77342 9.78026L1.21289 1.21973" stroke="#050517"/></svg>`;
             }
 
             wrapper.querySelectorAll(".option").forEach((el) => {
@@ -519,7 +585,11 @@
             family: "None",
             style: "None",
           });
-          option.innerHTML = `<div class='font-name'>-- Select a font</div>`;
+          const currentFont = document.createElement("div");
+          currentFont.classList.add("current-font");
+          currentFont.innerHTML = `<div class='font-name'>-- Select a font</div>`;
+
+          option.appendChild(currentFont);
 
           option.onclick = (e) => handleOptionClicks(e);
 
@@ -536,8 +606,10 @@
                 family: fontObj.fontName.family,
                 style: fontObj.fontName.style,
               });
-              option.innerHTML = `<div class='font-name'>${fontObj.fontName.family}</div><div class='font-style'>${fontObj.fontName.style}</div>`;
-
+              const currentFont = document.createElement("div");
+              currentFont.classList.add("current-font");
+              currentFont.innerHTML = `<div class='font-name'>${fontObj.fontName.family}</div><div class='font-style'>${fontObj.fontName.style}</div>`;
+              option.appendChild(currentFont);
               option.onclick = (e) => handleOptionClicks(e);
 
               options.appendChild(option);
@@ -579,31 +651,6 @@
         };
       }
 
-      function defaultPage(container) {
-        const body = document.createElement("div");
-        body.classList.add("body");
-        body.innerHTML =
-          "Select all the layers that contain the text that you want to replace";
-
-        const footer = document.createElement("div");
-        footer.classList.add("footer");
-
-        const footerLeft = document.createElement("div");
-        footerLeft.classList.add("footer-left");
-        footerLeft.innerHTML = "© 2024 Bulk Font Replacer by";
-
-        const footerRight = document.createElement("div");
-        footerRight.classList.add("footer-right");
-        footerRight.innerHTML = "<span>Pagenum</span><span>Github</span>";
-
-        footer.appendChild(footerLeft);
-        footer.appendChild(footerRight);
-        container.appendChild(body);
-        container.appendChild(footer);
-
-        return container;
-      }
-
       // Handle messages from the plugin code
       window.onmessage = (event) => {
         const message = event.data.pluginMessage;
@@ -625,10 +672,10 @@
           fontsFooter.classList.add("selected");
           fontContainer.classList.add("selected");
 
-          if (message.type === "load-fonts") {
-            fontsUsed = message.fontsUsed;
-            allFonts = message.allFonts;
+          fontsUsed = message.fontsUsed;
+          allFonts = message.allFonts;
 
+          if (message.type === "load-fonts") {
             fontContainer.innerHTML = "";
             fontSelectors = fontsUsed.map((font, index) =>
               createFontRow(font, allFonts, index)
@@ -636,9 +683,6 @@
           }
 
           if (message.type === "selected-fonts") {
-            fontsUsed = message.fontsUsed;
-            allFonts = message.allFonts;
-
             fontContainer.innerHTML = "";
             fontSelectors = fontsUsed.map((font, index) =>
               createFontRow(font, allFonts, index)

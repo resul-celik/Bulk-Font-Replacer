@@ -48,6 +48,20 @@ async function loadFonts() {
   const fonts = await figma.listAvailableFontsAsync();
   const textLayers = await getSelectedTextLayers();
 
+  const allAvailableFonts = [
+    ...new Set(
+      fonts.map((text: any) => {
+        return {
+          fontName: {
+            family: text.fontName.family,
+            style: text.fontName.style,
+            both: `${text.fontName.family} ${text.fontName.style}`,
+          },
+        };
+      })
+    ),
+  ];
+
   const fontsUsed = textLayers
     .flatMap((text: any) => text.fonts)
     .filter(
@@ -60,7 +74,7 @@ async function loadFonts() {
 
   figma.ui.postMessage({
     type: "load-fonts",
-    allFonts: fonts,
+    allFonts: allAvailableFonts,
     fontsUsed: fontsUsed,
   });
 }
@@ -71,6 +85,20 @@ loadFonts();
 async function loadSelectedFonts() {
   const fonts = await figma.listAvailableFontsAsync();
   const textLayers = await getSelectedTextLayers();
+
+  const allAvailableFonts = [
+    ...new Set(
+      fonts.map((text: any) => {
+        return {
+          fontName: {
+            family: text.fontName.family,
+            style: text.fontName.style,
+            both: `${text.fontName.family} ${text.fontName.style}`,
+          },
+        };
+      })
+    ),
+  ];
 
   const fontsUsed = textLayers
     .flatMap((text: any) => text.fonts)
@@ -84,7 +112,7 @@ async function loadSelectedFonts() {
 
   figma.ui.postMessage({
     type: "selected-fonts",
-    allFonts: fonts,
+    allFonts: allAvailableFonts,
     fontsUsed: fontsUsed,
   });
 }
@@ -108,10 +136,16 @@ figma.ui.onmessage = async (msg) => {
       const newFont = JSON.parse(font.value);
 
       if (newFont.family !== "None") {
-        await figma.loadFontAsync({
-          family: newFont.family,
-          style: newFont.style,
-        });
+        try {
+          await figma.loadFontAsync({
+            family: newFont.family,
+            style: newFont.style,
+          });
+        } catch (err) {
+          console.warn(
+            `The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
+          );
+        }
 
         for (let i = 0; i < textLayers.length; i++) {
           // Update the notification with progress
@@ -126,10 +160,16 @@ figma.ui.onmessage = async (msg) => {
           const { node, fonts } = textLayers[i];
 
           for (const font of fonts) {
-            await figma.loadFontAsync({
-              family: font.family,
-              style: font.style,
-            });
+            try {
+              await figma.loadFontAsync({
+                family: font.family,
+                style: font.style,
+              });
+            } catch (err) {
+              console.warn(
+                `The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
+              );
+            }
           }
 
           if (
