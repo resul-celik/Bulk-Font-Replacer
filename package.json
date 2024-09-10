@@ -7,7 +7,9 @@
     "build": "tsc -p tsconfig.json",
     "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
     "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
-    "watch": "npm run build -- --watch"
+    "watch": "npm run build -- --watch",
+    "git": "git add . && git commit -m",
+    "postgit": "git push --all"
   },
   "author": "",
   "license": "",

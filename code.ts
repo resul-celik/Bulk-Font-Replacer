@@ -127,15 +127,39 @@ figma.ui.onmessage = async (msg) => {
 
     const { allFonts } = msg;
     let fontCount = 0;
+    let replaceableFonts = 0;
+    let textCount = 0;
+    let replaceableTexts = 0;
 
     const textLayers = await getSelectedTextLayers();
 
     for (const font of allFonts) {
-      fontCount++;
       const originalFont = font;
       const newFont = JSON.parse(font.value);
 
       if (newFont.family !== "None") {
+        replaceableFonts++;
+        for (let i = 0; i < textLayers.length; i++) {
+          const { node, fonts } = textLayers[i];
+          for (const font of fonts) {
+            if (
+              font.family === originalFont.family &&
+              font.style === originalFont.style
+            ) {
+              replaceableTexts++;
+              break; // No need to count further fonts in this layer
+            }
+          }
+        }
+      }
+    }
+
+    for (const font of allFonts) {
+      const originalFont = font;
+      const newFont = JSON.parse(font.value);
+
+      if (newFont.family !== "None") {
+        fontCount++;
         try {
           await figma.loadFontAsync({
             family: newFont.family,
@@ -143,8 +167,9 @@ figma.ui.onmessage = async (msg) => {
           });
         } catch (err) {
           console.warn(
-            `The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
+            `Bulk Font Replacer: The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
           );
+          continue;
         }
 
         for (let i = 0; i < textLayers.length; i++) {
@@ -159,7 +184,17 @@ figma.ui.onmessage = async (msg) => {
 
           const { node, fonts } = textLayers[i];
 
+          let layerUpdated = false;
           for (const font of fonts) {
+            if (
+              font.family === originalFont.family &&
+              font.style === originalFont.style
+            ) {
+              if (!layerUpdated) {
+                textCount++; // Count this layer as being replaced
+                layerUpdated = true;
+              }
+            }
             try {
               await figma.loadFontAsync({
                 family: font.family,
@@ -167,8 +202,9 @@ figma.ui.onmessage = async (msg) => {
               });
             } catch (err) {
               console.warn(
-                `The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
+                `Bulk Font Replacer: The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
               );
+              continue;
             }
           }
 
