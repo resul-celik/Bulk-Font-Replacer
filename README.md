@@ -18,4 +18,4 @@
 - Support for multi-style text layers.
   Make your font management more efficient with Bulk Font Replacer, the ultimate tool for large-scale font replacements in Figma!
 
--> [Use Bulk Font Replacer in figma](https://www.figma.com/community/plugin/1406204255843371488/bulk-font-replacer)
+-> [Use Bulk Font Replacer in Figma](https://www.figma.com/community/plugin/1406204255843371488/bulk-font-replacer)

@@ -43,6 +43,12 @@ async function getSelectedTextLayers() {
   return textLayers;
 }
 
+let loadingNotification: any;
+
+if (figma.currentPage.selection.length !== 0) {
+  loadingNotification = figma.notify("Loading...", { timeout: 2000 });
+}
+
 // Load all available fonts and send them to the UI
 async function loadFonts() {
   const fonts = await figma.listAvailableFontsAsync();
@@ -63,7 +69,15 @@ async function loadFonts() {
   ];
 
   const fontsUsed = textLayers
-    .flatMap((text: any) => text.fonts)
+    .flatMap((textLayer: any) => {
+      return textLayer.fonts.map((font: any) => {
+        return {
+          family: font.family,
+          style: font.style,
+          nodeID: textLayer.node.id, // Include nodeID here
+        };
+      });
+    })
     .filter(
       (font: any, index: any, self: any) =>
         index ===
@@ -78,9 +92,6 @@ async function loadFonts() {
     fontsUsed: fontsUsed,
   });
 }
-
-// Start by loading fonts
-loadFonts();
 
 async function loadSelectedFonts() {
   const fonts = await figma.listAvailableFontsAsync();
@@ -101,7 +112,15 @@ async function loadSelectedFonts() {
   ];
 
   const fontsUsed = textLayers
-    .flatMap((text: any) => text.fonts)
+    .flatMap((textLayer: any) => {
+      return textLayer.fonts.map((font: any) => {
+        return {
+          family: font.family,
+          style: font.style,
+          nodeID: textLayer.node.id, // Include nodeID here
+        };
+      });
+    })
     .filter(
       (font: any, index: any, self: any) =>
         index ===
@@ -117,7 +136,17 @@ async function loadSelectedFonts() {
   });
 }
 
-figma.on("selectionchange", loadSelectedFonts);
+async function notifyAndLoadSelectedFonts() {
+  if (figma.currentPage.selection.length !== 0) {
+    loadingNotification = figma.notify("Loading...", { timeout: 1000 });
+  }
+
+  setTimeout(async () => {
+    await loadSelectedFonts();
+  }, 0);
+}
+
+figma.on("selectionchange", notifyAndLoadSelectedFonts);
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === "replace-fonts") {
@@ -167,7 +196,7 @@ figma.ui.onmessage = async (msg) => {
           });
         } catch (err) {
           console.warn(
-            `Bulk Font Replacer: The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
+            `[Bulk Font Replacer] The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
           );
           continue;
         }
@@ -202,7 +231,7 @@ figma.ui.onmessage = async (msg) => {
               });
             } catch (err) {
               console.warn(
-                `Bulk Font Replacer: The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
+                `[Bulk Font Replacer] The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
               );
               continue;
             }
@@ -238,5 +267,17 @@ figma.ui.onmessage = async (msg) => {
     notification.cancel();
     figma.notify("Fonts replaced successfully!", { timeout: 3000 });
     figma.closePlugin();
+  } else if (msg.type === "ready") {
+    await loadFonts();
+  } else {
+    const { nodeID } = msg;
+
+    try {
+      const layer: any = await figma.getNodeByIdAsync(nodeID);
+      figma.currentPage.selection = [layer];
+      figma.viewport.scrollAndZoomIntoView([layer]);
+    } catch (err) {
+      console.error(`[Bulk Font Replacer] ${err}`);
+    }
   }
 };
