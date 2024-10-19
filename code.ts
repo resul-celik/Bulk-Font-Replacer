@@ -205,7 +205,7 @@ figma.ui.onmessage = async (msg) => {
           // Update the notification with progress
           notification.cancel(); // Cancel the previous notification
           notification = figma.notify(
-            `Replacing font ${fontCount}/${allFonts.length} in text layer ${
+            `Replacing font ${fontCount}/${replaceableFonts} in text layer ${
               i + 1
             } of ${textLayers.length}`,
             { timeout: 60000 }
