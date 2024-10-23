@@ -8,6 +8,9 @@
   "documentAccess": "dynamic-page",
   "editorType": ["figma"],
   "ui": "ui.html",
+  "relaunchButtons": [
+    {"command": "open", "name": "Open Bulk Font Replacer"}
+  ],
   "networkAccess": {
     "allowedDomains": [
       "https://fonts.googleapis.com",

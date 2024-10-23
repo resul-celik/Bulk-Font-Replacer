@@ -155,10 +155,10 @@ figma.ui.onmessage = async (msg) => {
     });
 
     const { allFonts } = msg;
-    let fontCount = 0;
-    let replaceableFonts = 0;
-    let textCount = 0;
-    let replaceableTexts = 0;
+    let fontCount:number = 0;
+    let replaceableFonts:number = 0;
+    let textCount:number = 0;
+    let replaceableTexts:number = 0;
 
     const textLayers = await getSelectedTextLayers();
 
@@ -266,6 +266,11 @@ figma.ui.onmessage = async (msg) => {
     // Cancel the progress notification and show a success message
     notification.cancel();
     figma.notify("Fonts replaced successfully!", { timeout: 3000 });
+
+    figma.root.setRelaunchData({
+      open: "" 
+    });
+
     figma.closePlugin();
   } else if (msg.type === "ready") {
     await loadFonts();
@@ -273,7 +278,7 @@ figma.ui.onmessage = async (msg) => {
     const { nodeID } = msg;
 
     try {
-      const layer: any = await figma.getNodeByIdAsync(nodeID);
+      const layer = await figma.getNodeByIdAsync(nodeID) as SceneNode;
       figma.currentPage.selection = [layer];
       figma.viewport.scrollAndZoomIntoView([layer]);
     } catch (err) {
