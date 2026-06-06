@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -35,8 +35,17 @@
 
       body {
         width: 100%;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          "Open Sans",
+          "Helvetica Neue",
           sans-serif;
         padding: 0;
         margin: 0;
@@ -471,16 +480,11 @@
         </div>
         <div class="footer-right">
           <a
-            href="https://www.figma.com/community/plugin/1175115698559984660/pagenum"
-            target="_blank"
-            >Pagenum</a
-          >
-          —
-          <a
             href="https://www.producthunt.com/posts/bulk-font-replacer-for-figma"
             target="_blank"
             >Product Hunt</a
           >
+          —
           <a
             href="https://github.com/resul-celik/Bulk-Font-Replacer"
             target="_blank"
@@ -491,7 +495,7 @@
       <div class="fonts-footer">
         <div class="footer-left">
           <div class="information">
-            **If you don’t select a font, It will not be replaced with a new one
+            * If you don’t select a font, it will not be replaced
           </div>
         </div>
         <div class="footer-right">
@@ -504,72 +508,54 @@
         parent.postMessage({ pluginMessage: { type: "ready" } }, "*");
       });
 
-      function icons() {
-        const search = `
-        <svg class='icon search-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M17.8107 17.0221L20.9649 20.1764M19.3879 12C19.3879 16.5156 15.7272 20.1763 11.2115 20.1763C6.69584 20.1763 3.03516 16.5156 3.03516 12C3.03516 7.48429 6.69584 3.82361 11.2115 3.82361C15.7272 3.82361 19.3879 7.48429 19.3879 12Z"/>
-        </svg>`;
-
-        const close = `
-        <svg class='icon close-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4.36719 4.3678L19.6315 19.6321M19.6315 4.36788L4.36719 19.6322"/>
-        </svg>`;
-
-        const chevronDown = `
-        <svg class='icon chevron-down' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.6094 8.19531L12 17.8047L2.39062 8.19531"/>
-        </svg>`;
-
-        const target = `
-        <svg class='icon target-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M11.9999 3V8.28368M21 12H15.7163M11.9999 15.7163V21M8.28368 12H3M19.1186 11.7395C19.1186 15.671 15.9314 18.8582 11.9999 18.8582C8.06835 18.8582 4.88121 15.671 4.88121 11.7395C4.88121 7.80793 8.06835 4.62079 11.9999 4.62079C15.9314 4.62079 19.1186 7.80793 19.1186 11.7395Z"/>
-        </svg>`;
-
-        const checkmark = `
-        <svg class='icon checkmark-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.6496 5.38025L8.41014 18.6197L2.34961 12.5591"/>
-        </svg>`;
-
-        return { search, close, chevronDown, target, checkmark };
-      }
+      // SVG icon strings — defined once at module level
+      const ICONS = {
+        search: `<svg class='icon search-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8107 17.0221L20.9649 20.1764M19.3879 12C19.3879 16.5156 15.7272 20.1763 11.2115 20.1763C6.69584 20.1763 3.03516 16.5156 3.03516 12C3.03516 7.48429 6.69584 3.82361 11.2115 3.82361C15.7272 3.82361 19.3879 7.48429 19.3879 12Z"/></svg>`,
+        close: `<svg class='icon close-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.36719 4.3678L19.6315 19.6321M19.6315 4.36788L4.36719 19.6322"/></svg>`,
+        chevronDown: `<svg class='icon chevron-down' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.6094 8.19531L12 17.8047L2.39062 8.19531"/></svg>`,
+        target: `<svg class='icon target-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.9999 3V8.28368M21 12H15.7163M11.9999 15.7163V21M8.28368 12H3M19.1186 11.7395C19.1186 15.671 15.9314 18.8582 11.9999 18.8582C8.06835 18.8582 4.88121 15.671 4.88121 11.7395C4.88121 7.80793 8.06835 4.62079 11.9999 4.62079C15.9314 4.62079 19.1186 7.80793 19.1186 11.7395Z"/></svg>`,
+        checkmark: `<svg class='icon checkmark-icon' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.6496 5.38025L8.41014 18.6197L2.34961 12.5591"/></svg>`,
+      };
 
       let fontSelectors = [];
 
-      /* DROPDOWN */
-
       function createDropdown(font, allFonts, index) {
-        // Create Wrapper
+        // Each option row is a fixed 47px tall — used by the virtual scroller
+        const ITEM_HEIGHT = 47;
+        const OVERSCAN = 3;
+
+        // Persists across createOptions calls so re-filtering keeps the selection
+        let currentSelectedValue = JSON.stringify({ family: "None", style: "None" });
+        let removeScrollListener = null;
+
         const dropdown = document.createElement("div");
         dropdown.classList.add("dropdown");
         dropdown.dataset.active = "false";
-        dropdown.dataset.value = JSON.stringify({
-          family: "None",
-          style: "None",
-        });
+        dropdown.dataset.value = JSON.stringify({ family: "None", style: "None" });
 
-        const { search, close, chevronDown, target, checkmark } = icons();
-
-        // Create Text
         const dropdownText = document.createElement("div");
         dropdownText.classList.add("dropdown-text");
-        dropdownText.innerHTML = `<div>Select a font</div>${chevronDown}`;
+        dropdownText.innerHTML = `<div>Select a font</div>${ICONS.chevronDown}`;
 
         dropdownText.onclick = function () {
           const parent = this.closest(".dropdown");
           if (parent.getAttribute("data-active") === "false") {
+            // Make visible first so options.clientHeight is non-zero when the
+            // virtual scroller runs its initial render
             parent.querySelector(".dropdown-content").classList.add("active");
             parent.setAttribute("data-active", "true");
+            if (!parent.dataset.initialized) {
+              parent.dataset.initialized = "true";
+              createOptions(allFonts);
+            }
           } else {
-            parent
-              .querySelector(".dropdown-content")
-              .classList.remove("active");
+            parent.querySelector(".dropdown-content").classList.remove("active");
             parent.setAttribute("data-active", "false");
           }
         };
 
         dropdown.appendChild(dropdownText);
 
-        // Create Content
         const dropdownContent = document.createElement("div");
         dropdownContent.classList.add("dropdown-content");
 
@@ -581,10 +567,9 @@
 
         const closeIcon = document.createElement("div");
         closeIcon.classList.add("close-icon");
-        closeIcon.innerHTML = close;
+        closeIcon.innerHTML = ICONS.close;
         closeIcon.onclick = function () {
           const parent = this.closest(".dropdown");
-
           parent.querySelector(".dropdown-content").classList.remove("active");
           parent.setAttribute("data-active", "false");
         };
@@ -595,24 +580,22 @@
 
         contentActions.appendChild(dropdownTitle);
         contentActions.appendChild(closeIcon);
-
         contentHead.appendChild(contentActions);
 
         const searchWrapper = document.createElement("div");
         searchWrapper.classList.add("search-wrapper");
-        searchWrapper.innerHTML = search;
+        searchWrapper.innerHTML = ICONS.search;
 
         const searchInput = document.createElement("input");
         searchInput.classList.add("search");
         searchInput.type = "text";
         searchInput.placeholder = "Search fonts";
-        searchInput.onkeyup = function (e) {
-          let filteredFonts = [];
-          filteredFonts = allFonts.filter(function (ev) {
-            return ev.fontName.both.toLowerCase().includes(e.target.value);
-          });
-
-          createOptions(filteredFonts);
+        searchInput.oninput = function () {
+          const query = this.value.toLowerCase();
+          const filtered = allFonts.filter((f) =>
+            f.fontName.both.toLowerCase().includes(query),
+          );
+          createOptions(filtered);
         };
 
         searchWrapper.appendChild(searchInput);
@@ -622,107 +605,135 @@
         const options = document.createElement("div");
         options.classList.add("options");
 
-        /* Create Options */
+        // handleOptionClicks is at createDropdown scope so it can update
+        // currentSelectedValue which must survive createOptions re-calls on search
+        function handleOptionClicks(e) {
+          const el = e.target;
+          const wrapper = el.closest(".dropdown");
+          const dtText = wrapper.querySelector(".dropdown-text");
+          const selectedState = el.dataset.value;
+          const optionValues = JSON.parse(selectedState);
 
-        function createOptions(allFonts) {
-          options.innerHTML = "";
+          currentSelectedValue = selectedState;
 
-          function handleOptionClicks(e) {
-            const currentOption = e.target;
-            const wrapper = currentOption.closest(".dropdown");
-            const dtText = wrapper.querySelector(".dropdown-text");
+          // Only currently rendered nodes are in the DOM — toggle their class
+          wrapper.querySelectorAll(".option").forEach((o) =>
+            o.classList.toggle("current-option", o.dataset.value === currentSelectedValue),
+          );
 
-            let selectedState = currentOption.dataset.value;
-
-            let optionValues = JSON.parse(selectedState);
-
-            if (optionValues.family === "None") {
-              dtText.classList.remove("dropdown-selected");
-              dtText.innerHTML = `<div>Select a font</div>${chevronDown}`;
-            } else {
-              dtText.classList.add("dropdown-selected");
-              dtText.innerHTML = `
+          if (optionValues.family === "None") {
+            dtText.classList.remove("dropdown-selected");
+            dtText.innerHTML = `<div>Select a font</div>${ICONS.chevronDown}`;
+          } else {
+            dtText.classList.add("dropdown-selected");
+            dtText.innerHTML = `
               <div class="font-name">${optionValues.family}</div>
               <div class="font-style">${optionValues.style}</div>
-              ${chevronDown}`;
-            }
-
-            wrapper.querySelectorAll(".option").forEach((el) => {
-              el.classList.remove("current-option");
-            });
-            currentOption.classList.add("current-option");
-
-            wrapper
-              .querySelector(".dropdown-content")
-              .classList.remove("active");
-            wrapper.setAttribute("data-active", "false");
-
-            wrapper.dataset.value = selectedState;
-            // Update the corresponding fontSelector value
-            fontSelectors[index].value = selectedState;
+              ${ICONS.chevronDown}`;
           }
 
-          const option = document.createElement("div");
-          option.classList.add("option", "first-option", "current-option");
-          option.dataset.value = JSON.stringify({
-            family: "None",
-            style: "None",
-          });
-
-          option.innerHTML = `
-            <div class='new-font'>
-              <div class='font-name'>-- Select a font</div>
-            </div>
-            ${checkmark}
-          `;
-
-          option.onclick = (e) => handleOptionClicks(e);
-
-          options.appendChild(option);
-
-          allFonts.forEach((fontObj) => {
-            if (
-              fontObj.fontName.family.substr(0, 1) !== "." &&
-              fontObj.fontName.family.substr(0, 1) !== "?"
-            ) {
-              const option = document.createElement("div");
-              option.classList.add("option");
-              option.dataset.value = JSON.stringify({
-                family: fontObj.fontName.family,
-                style: fontObj.fontName.style,
-              });
-              option.innerHTML = `
-              <div class='new-font'>
-                <div class='font-name'>${fontObj.fontName.family}</div>
-                <div class='font-style'>${fontObj.fontName.style}</div>
-              </div>
-              ${checkmark}`;
-              option.onclick = (e) => handleOptionClicks(e);
-
-              options.appendChild(option);
-            }
-          });
+          wrapper.querySelector(".dropdown-content").classList.remove("active");
+          wrapper.setAttribute("data-active", "false");
+          wrapper.dataset.value = selectedState;
+          fontSelectors[index].value = selectedState;
         }
 
-        createOptions(allFonts);
+        // Virtual scroll: only the ~15 visible rows exist in the DOM at any time.
+        // Replaces the entire options list on each search keystroke.
+        function createOptions(fonts) {
+          if (removeScrollListener) {
+            removeScrollListener();
+            removeScrollListener = null;
+          }
+
+          const items = [
+            { isNone: true, value: JSON.stringify({ family: "None", style: "None" }) },
+            ...fonts
+              .filter(
+                (f) =>
+                  !f.fontName.family.startsWith(".") &&
+                  !f.fontName.family.startsWith("?"),
+              )
+              .map((f) => ({
+                isNone: false,
+                family: f.fontName.family,
+                style: f.fontName.style,
+                value: JSON.stringify({
+                  family: f.fontName.family,
+                  style: f.fontName.style,
+                }),
+              })),
+          ];
+
+          // Tall inner div gives the scrollbar the correct full height
+          const inner = document.createElement("div");
+          inner.style.cssText = `position: relative; height: ${items.length * ITEM_HEIGHT}px; width: 100%;`;
+          options.innerHTML = "";
+          options.appendChild(inner);
+
+          const pool = new Map(); // rendered index → element
+
+          function makeItem(item, i) {
+            const el = document.createElement("div");
+            el.classList.add("option");
+            if (i === 0) el.classList.add("first-option");
+            if (item.value === currentSelectedValue) el.classList.add("current-option");
+            el.dataset.value = item.value;
+            // Fixed height keeps virtual-scroll math accurate
+            el.style.cssText = `position: absolute; top: ${i * ITEM_HEIGHT}px; left: 0; right: 0; height: ${ITEM_HEIGHT}px; box-sizing: border-box;`;
+            el.innerHTML = item.isNone
+              ? `<div class='new-font'><div class='font-name'>-- Select a font</div></div>${ICONS.checkmark}`
+              : `<div class='new-font'><div class='font-name'>${item.family}</div><div class='font-style'>${item.style}</div></div>${ICONS.checkmark}`;
+            el.onclick = handleOptionClicks;
+            return el;
+          }
+
+          function renderVisible() {
+            const scrollTop = options.scrollTop;
+            // Fall back to 350px on first call before layout is computed
+            const viewHeight = options.clientHeight || 350;
+            const first = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
+            const last = Math.min(
+              items.length - 1,
+              Math.ceil((scrollTop + viewHeight) / ITEM_HEIGHT) + OVERSCAN,
+            );
+
+            for (const [i, el] of pool) {
+              if (i < first || i > last) {
+                inner.removeChild(el);
+                pool.delete(i);
+              }
+            }
+            for (let i = first; i <= last; i++) {
+              if (!pool.has(i)) {
+                const el = makeItem(items[i], i);
+                inner.appendChild(el);
+                pool.set(i, el);
+              }
+            }
+          }
+
+          options.addEventListener("scroll", renderVisible);
+          removeScrollListener = () => options.removeEventListener("scroll", renderVisible);
+          renderVisible();
+        }
+
         dropdownContent.appendChild(options);
         dropdown.appendChild(dropdownContent);
         return dropdown;
       }
 
-      /* FONT ROW */
       function createFontRow(font, allFonts, index) {
-        const { target } = icons();
         const fontRow = document.createElement("div");
-        fontRow.classList = ["selected-font"];
+        fontRow.classList.add("selected-font");
         fontRow.dataset.id = font.nodeID;
 
         const currentFont = document.createElement("div");
         currentFont.classList.add("current-font");
         currentFont.innerHTML = `
-        <div class='go-to' onclick='goToLayer(this)'>${target}</div>
-        <div class='font-name'>${font.family} </div>
-        <div class='font-style'>${font.style}</div>
+          <div class='go-to' onclick='goToLayer(this)'>${ICONS.target}</div>
+          <div class='font-name'>${font.family}</div>
+          <div class='font-style'>${font.style}</div>
         `;
         fontRow.appendChild(currentFont);
 
@@ -732,9 +743,7 @@
         fontRow.appendChild(arrowWrapper);
 
         const dropdown = createDropdown(font, allFonts, index);
-
         fontRow.appendChild(dropdown);
-
         document.querySelector(".selected-fonts").appendChild(fontRow);
 
         return {
@@ -745,11 +754,8 @@
         };
       }
 
-      // Handle messages from the plugin code
-      window.onmessage = (event) => {
+      window.addEventListener("message", (event) => {
         const message = event.data.pluginMessage;
-        let fontsUsed, allFonts;
-        const container = document.querySelector(".container");
         const body = document.querySelector(".body");
         const footer = document.querySelector(".footer");
         const fontsFooter = document.querySelector(".fonts-footer");
@@ -766,24 +772,12 @@
           fontsFooter.classList.add("selected");
           fontContainer.classList.add("selected");
 
-          fontsUsed = message.fontsUsed;
-          allFonts = message.allFonts;
-
-          if (message.type === "load-fonts") {
-            fontContainer.innerHTML = "";
-            fontSelectors = fontsUsed.map((font, index) =>
-              createFontRow(font, allFonts, index)
-            );
-          }
-
-          if (message.type === "selected-fonts") {
-            fontContainer.innerHTML = "";
-            fontSelectors = fontsUsed.map((font, index) =>
-              createFontRow(font, allFonts, index)
-            );
-          }
+          fontContainer.innerHTML = "";
+          fontSelectors = message.fontsUsed.map((font, index) =>
+            createFontRow(font, message.allFonts, index),
+          );
         }
-      };
+      });
 
       function goToLayer(e) {
         parent.postMessage(
@@ -793,20 +787,14 @@
               nodeID: e.closest(".selected-font").dataset.id,
             },
           },
-          "*"
+          "*",
         );
       }
 
-      // Handle the replace button click
       document.getElementById("replace-button").onclick = () => {
         parent.postMessage(
-          {
-            pluginMessage: {
-              type: "replace-fonts",
-              allFonts: fontSelectors,
-            },
-          },
-          "*"
+          { pluginMessage: { type: "replace-fonts", allFonts: fontSelectors } },
+          "*",
         );
       };
     </script>

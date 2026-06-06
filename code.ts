@@ -1,284 +1,180 @@
-// Show the UI with an initial size
+/// <reference types="@figma/plugin-typings" />
+
 figma.showUI(__html__, { width: 600, height: 400 });
-let textLayers: { node: any; fonts: any[] }[] = [];
 
-// Function to get font names from a text node, including handling multiple styles
-async function getFontNamesFromTextNode(textNode: any) {
-  const fontNames = [];
-  let previousFontName = null;
+let cachedAvailableFonts: { fontName: { family: string; style: string; both: string } }[] | null = null;
 
-  for (let i = 0; i < textNode.characters.length; i++) {
-    const fontName = await textNode.getRangeFontName(i, i + 1);
-    if (
-      !previousFontName ||
-      fontName.family !== previousFontName.family ||
-      fontName.style !== previousFontName.style
-    ) {
-      fontNames.push(fontName);
-      previousFontName = fontName;
-    }
-  }
-  return fontNames;
-}
-
-async function getSelectedTextLayers() {
-  const selection = figma.currentPage.selection;
-  const textLayers: any = [];
-
-  async function findTextNodes(node: any) {
-    if (node.type === "TEXT") {
-      const fonts = await getFontNamesFromTextNode(node);
-      textLayers.push({ node, fonts });
-    } else if ("children" in node) {
-      for (const child of node.children) {
-        await findTextNodes(child);
+async function getAvailableFonts() {
+  if (!cachedAvailableFonts) {
+    const raw = await figma.listAvailableFontsAsync();
+    const seen = new Map<string, true>();
+    cachedAvailableFonts = [];
+    for (const f of raw) {
+      const key = `${f.fontName.family}\0${f.fontName.style}`;
+      if (!seen.has(key)) {
+        seen.set(key, true);
+        cachedAvailableFonts.push({
+          fontName: {
+            family: f.fontName.family,
+            style: f.fontName.style,
+            both: `${f.fontName.family} ${f.fontName.style}`,
+          },
+        });
       }
     }
   }
+  return cachedAvailableFonts;
+}
 
-  for (const node of selection) {
-    await findTextNodes(node);
+// Binary search for the end of a contiguous font run — O(log n) per run vs O(n) character scan
+function getFontRunEnd(node: TextNode, start: number, font: FontName, len: number): number {
+  let lo = start + 1, hi = len;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    const f = node.getRangeFontName(mid, mid + 1) as FontName;
+    if (f.family === font.family && f.style === font.style) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
+
+// O(k log n) where k = number of font runs, instead of O(n) character-by-character
+function getFontNamesFromTextNode(node: TextNode): FontName[] {
+  const len = node.characters.length;
+  if (len === 0) return [];
+  const fonts: FontName[] = [];
+  let i = 0;
+  while (i < len) {
+    const font = node.getRangeFontName(i, i + 1) as FontName;
+    fonts.push(font);
+    i = getFontRunEnd(node, i, font, len);
+  }
+  return fonts;
+}
+
+function getSelectedTextLayers(): { node: TextNode; fonts: FontName[] }[] {
+  const result: { node: TextNode; fonts: FontName[] }[] = [];
+
+  function traverse(node: SceneNode) {
+    if (node.type === "TEXT") {
+      result.push({ node, fonts: getFontNamesFromTextNode(node) });
+    } else if ("children" in node) {
+      for (const child of node.children) traverse(child);
+    }
   }
 
-  return textLayers;
+  for (const node of figma.currentPage.selection) traverse(node);
+  return result;
 }
 
-let loadingNotification: any;
-
-if (figma.currentPage.selection.length !== 0) {
-  loadingNotification = figma.notify("Loading...", { timeout: 2000 });
-}
-
-// Load all available fonts and send them to the UI
-async function loadFonts() {
-  const fonts = await figma.listAvailableFontsAsync();
-  const textLayers = await getSelectedTextLayers();
-
-  const allAvailableFonts = [
-    ...new Set(
-      fonts.map((text: any) => {
-        return {
-          fontName: {
-            family: text.fontName.family,
-            style: text.fontName.style,
-            both: `${text.fontName.family} ${text.fontName.style}`,
-          },
-        };
-      })
-    ),
-  ];
-
-  const fontsUsed = textLayers
-    .flatMap((textLayer: any) => {
-      return textLayer.fonts.map((font: any) => {
-        return {
-          family: font.family,
-          style: font.style,
-          nodeID: textLayer.node.id, // Include nodeID here
-        };
-      });
-    })
-    .filter(
-      (font: any, index: any, self: any) =>
-        index ===
-        self.findIndex(
-          (f: any) => f.family === font.family && f.style === font.style
-        )
-    );
-
-  figma.ui.postMessage({
-    type: "load-fonts",
-    allFonts: allAvailableFonts,
-    fontsUsed: fontsUsed,
-  });
-}
-
-async function loadSelectedFonts() {
-  const fonts = await figma.listAvailableFontsAsync();
-  const textLayers = await getSelectedTextLayers();
-
-  const allAvailableFonts = [
-    ...new Set(
-      fonts.map((text: any) => {
-        return {
-          fontName: {
-            family: text.fontName.family,
-            style: text.fontName.style,
-            both: `${text.fontName.family} ${text.fontName.style}`,
-          },
-        };
-      })
-    ),
-  ];
-
-  const fontsUsed = textLayers
-    .flatMap((textLayer: any) => {
-      return textLayer.fonts.map((font: any) => {
-        return {
-          family: font.family,
-          style: font.style,
-          nodeID: textLayer.node.id, // Include nodeID here
-        };
-      });
-    })
-    .filter(
-      (font: any, index: any, self: any) =>
-        index ===
-        self.findIndex(
-          (f: any) => f.family === font.family && f.style === font.style
-        )
-    );
-
-  figma.ui.postMessage({
-    type: "selected-fonts",
-    allFonts: allAvailableFonts,
-    fontsUsed: fontsUsed,
-  });
-}
-
-async function notifyAndLoadSelectedFonts() {
-  if (figma.currentPage.selection.length !== 0) {
-    loadingNotification = figma.notify("Loading...", { timeout: 1000 });
+function deduplicateFontsUsed(
+  textLayers: { node: TextNode; fonts: FontName[] }[]
+): { family: string; style: string; nodeID: string }[] {
+  const seen = new Map<string, true>();
+  const result: { family: string; style: string; nodeID: string }[] = [];
+  for (const { node, fonts } of textLayers) {
+    for (const font of fonts) {
+      const key = `${font.family}\0${font.style}`;
+      if (!seen.has(key)) {
+        seen.set(key, true);
+        result.push({ family: font.family, style: font.style, nodeID: node.id });
+      }
+    }
   }
-
-  setTimeout(async () => {
-    await loadSelectedFonts();
-  }, 0);
+  return result;
 }
 
-figma.on("selectionchange", notifyAndLoadSelectedFonts);
+async function sendFontsToUI(type: "load-fonts" | "selected-fonts") {
+  const allFonts = await getAvailableFonts();
+  const textLayers = getSelectedTextLayers();
+  figma.ui.postMessage({ type, allFonts, fontsUsed: deduplicateFontsUsed(textLayers) });
+}
+
+if (figma.currentPage.selection.length > 0) {
+  figma.notify("Loading...", { timeout: 2000 });
+}
+
+figma.on("selectionchange", async () => {
+  if (figma.currentPage.selection.length > 0) {
+    figma.notify("Loading...", { timeout: 1000 });
+  }
+  await sendFontsToUI("selected-fonts");
+});
 
 figma.ui.onmessage = async (msg) => {
-  if (msg.type === "replace-fonts") {
-    let notification = figma.notify("Loading layers, please wait...", {
-      timeout: 60000,
-    });
+  if (msg.type === "ready") {
+    await sendFontsToUI("load-fonts");
+  } else if (msg.type === "replace-fonts") {
+    let notification = figma.notify("Replacing fonts, please wait...", { timeout: 60000 });
 
-    const { allFonts } = msg;
-    let fontCount:number = 0;
-    let replaceableFonts:number = 0;
-    let textCount:number = 0;
-    let replaceableTexts:number = 0;
+    const { allFonts }: { allFonts: { family: string; style: string; value: string }[] } = msg;
+    const textLayers = getSelectedTextLayers();
+    const loadedFonts = new Set<string>();
 
-    const textLayers = await getSelectedTextLayers();
+    const ensureFontLoaded = async (font: FontName): Promise<boolean> => {
+      const key = `${font.family}\0${font.style}`;
+      if (loadedFonts.has(key)) return true;
+      try {
+        await figma.loadFontAsync(font);
+        loadedFonts.add(key);
+        return true;
+      } catch {
+        console.warn(`[Bulk Font Replacer] Could not load "${font.family} ${font.style}"`);
+        return false;
+      }
+    };
 
-    for (const font of allFonts) {
-      const originalFont = font;
-      const newFont = JSON.parse(font.value);
+    const replacements = allFonts.filter((f) => JSON.parse(f.value).family !== "None");
+    let layersAffected = 0;
 
-      if (newFont.family !== "None") {
-        replaceableFonts++;
-        for (let i = 0; i < textLayers.length; i++) {
-          const { node, fonts } = textLayers[i];
-          for (const font of fonts) {
-            if (
-              font.family === originalFont.family &&
-              font.style === originalFont.style
-            ) {
-              replaceableTexts++;
-              break; // No need to count further fonts in this layer
+    for (let ri = 0; ri < replacements.length; ri++) {
+      const orig = replacements[ri];
+      const newFont = JSON.parse(orig.value) as FontName;
+
+      notification.cancel();
+      notification = figma.notify(
+        `Replacing font ${ri + 1} of ${replacements.length}...`,
+        { timeout: 60000 }
+      );
+
+      if (!(await ensureFontLoaded(newFont))) continue;
+
+      for (const { node, fonts } of textLayers) {
+        if (!fonts.some((f) => f.family === orig.family && f.style === orig.style)) continue;
+
+        for (const f of fonts) await ensureFontLoaded(f);
+
+        layersAffected++;
+
+        if (fonts.length === 1) {
+          node.fontName = newFont;
+        } else {
+          // Replace matching runs using binary search — avoids per-character iteration
+          const len = node.characters.length;
+          let j = 0;
+          while (j < len) {
+            const font = node.getRangeFontName(j, j + 1) as FontName;
+            const end = getFontRunEnd(node, j, font, len);
+            if (font.family === orig.family && font.style === orig.style) {
+              node.setRangeFontName(j, end, newFont);
             }
+            j = end;
           }
         }
       }
     }
 
-    for (const font of allFonts) {
-      const originalFont = font;
-      const newFont = JSON.parse(font.value);
-
-      if (newFont.family !== "None") {
-        fontCount++;
-        try {
-          await figma.loadFontAsync({
-            family: newFont.family,
-            style: newFont.style,
-          });
-        } catch (err) {
-          console.warn(
-            `[Bulk Font Replacer] The font "${newFont.family} ${newFont.style}" could not be loaded. Figma may use a fallback font.`
-          );
-          continue;
-        }
-
-        for (let i = 0; i < textLayers.length; i++) {
-          // Update the notification with progress
-          notification.cancel(); // Cancel the previous notification
-          notification = figma.notify(
-            `Replacing font ${fontCount}/${replaceableFonts} in text layer ${
-              i + 1
-            } of ${textLayers.length}`,
-            { timeout: 60000 }
-          );
-
-          const { node, fonts } = textLayers[i];
-
-          let layerUpdated = false;
-          for (const font of fonts) {
-            if (
-              font.family === originalFont.family &&
-              font.style === originalFont.style
-            ) {
-              if (!layerUpdated) {
-                textCount++; // Count this layer as being replaced
-                layerUpdated = true;
-              }
-            }
-            try {
-              await figma.loadFontAsync({
-                family: font.family,
-                style: font.style,
-              });
-            } catch (err) {
-              console.warn(
-                `[Bulk Font Replacer] The font "${font.family} ${font.style}" could not be loaded. Figma may use a fallback font.`
-              );
-              continue;
-            }
-          }
-
-          if (
-            fonts.length === 1 &&
-            fonts[0].family === originalFont.family &&
-            fonts[0].style === originalFont.style
-          ) {
-            node.fontName = { family: newFont.family, style: newFont.style };
-          } else {
-            for (let j = 0; j < node.characters.length; j++) {
-              const fontName = node.getRangeFontName(j, j + 1);
-
-              if (
-                fontName.family === originalFont.family &&
-                fontName.style === originalFont.style
-              ) {
-                // Set the range font name with only the required properties
-                node.setRangeFontName(j, j + 1, {
-                  family: newFont.family,
-                  style: newFont.style,
-                });
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Cancel the progress notification and show a success message
     notification.cancel();
-    figma.notify("Fonts replaced successfully!", { timeout: 3000 });
+    figma.notify(
+      `Done! Replaced fonts in ${layersAffected} layer${layersAffected !== 1 ? "s" : ""}.`,
+      { timeout: 3000 }
+    );
 
-    figma.root.setRelaunchData({
-      open: "" 
-    });
-
+    figma.root.setRelaunchData({ open: "" });
     figma.closePlugin();
-  } else if (msg.type === "ready") {
-    await loadFonts();
-  } else {
-    const { nodeID } = msg;
-
+  } else if (msg.type === "go-to") {
     try {
-      const layer = await figma.getNodeByIdAsync(nodeID) as SceneNode;
+      const layer = (await figma.getNodeByIdAsync(msg.nodeID)) as SceneNode;
       figma.currentPage.selection = [layer];
       figma.viewport.scrollAndZoomIntoView([layer]);
     } catch (err) {
