@@ -1,0 +1,18 @@
+Performance & Code Quality Update
+
+- Font picker now opens instantly using virtual scrolling — only visible rows are
+  rendered instead of thousands of DOM nodes upfront.
+
+- Font scanning and replacement on mixed-style text is significantly faster thanks
+  to binary search across character runs instead of per-character iteration.
+
+- Fixed: font list could contain duplicates due to a broken deduplication.
+
+- Fixed: font search was case-sensitive ("inter" wouldn't find "Inter").
+
+- Available fonts are now cached so re-fetching on every selection change is avoided.
+
+- Progress notification no longer spams on large selections — updates per font instead
+  of per layer. Success message shows how many layers were affected.
+
+- Minor: fixed a label that was showing raw "**" markdown characters instead of text.
